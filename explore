@@ -1,0 +1,25 @@
+#!/usr/bin/Rscript
+
+data = read.delim('ad', header=T)
+attach(data)
+tapply(sign(score[score >= 3]), font[score >= 3], sum)
+tapply(score >= 0, font, sum)
+tapply(sign(score[score >= 3]), font[score >= 3], sum) / tapply(score >= 0, font, sum)
+tapply(score, font, mean)
+
+# Taking Georgia as the mean, find the mean improvement over Georgia:
+tapply(score - mean(score[font=='Georgia']), font, mean)
+# or better, with pseudo- matched pairs:
+tapply(score - score[font=='Georgia'], font, mean)
+# OR:
+shuffle <- function(x) { return(sample(x, length(x))) }
+tapply(score - shuffle(score[font=='Georgia']), font, mean)
+
+# We can see this yields something (maybe) like a normal curve for each font:
+hist(score[font=='Baskerville'] - score[font=='Georgia'], right=FALSE, breaks=-6:6)
+
+# Now if our null hypothesis is that changing the font has no effect, what is the p-value for each font's result?
+t.test(score[font=='Baskerville'] - shuffle(score[font=='Georgia']), mu=0)
+
+
+
